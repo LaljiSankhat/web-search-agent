@@ -11,6 +11,11 @@ from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 import asyncio
 
 load_dotenv()
+from langfuse.langchain import CallbackHandler
+from langfuse import observe
+
+langfuse_handler = CallbackHandler()
+
 
 # search = TavilySearch()
 
@@ -20,7 +25,7 @@ class AgentState(TypedDict):
 
     # Research
     topic: Optional[str]
-    contents: List[str]
+    contents: str
     summarized_content: str
     deepResearch: str
 
@@ -31,7 +36,7 @@ class AgentState(TypedDict):
     satisfied: Optional[bool]
 
 
-
+@observe(name="get-content")
 async def get_contents(state: AgentState):
     topic_user = state["userMessage"]
     state["topic"] = topic_user
@@ -53,14 +58,13 @@ async def get_contents(state: AgentState):
 
     combined_content = "\n\n".join(documents)
 
-    state["contents"] = combined_content[:]
-
+    state["contents"] = combined_content
     return state
 
 
-
+@observe(name="deep-think")
 async def deep_think(state: AgentState):
-    result = " ".join(state['contents'])
+    result = state['contents']
     state["summarized_content"] = ""
 
 
@@ -92,6 +96,7 @@ async def deep_think(state: AgentState):
     state['deepResearch'] = response.content
     return state
 
+@observe(name="Human-approval")
 def human_approval(state: AgentState):
     decision = interrupt(
         {
@@ -105,6 +110,7 @@ def human_approval(state: AgentState):
     return {} 
 
 
+@observe(name="satisfaction")
 def satisfaction(state: AgentState):
     decision = interrupt(
         {"question": "Are you satisfied?", "options": ["yes", "no"]}
@@ -112,6 +118,7 @@ def satisfaction(state: AgentState):
     return {"satisfied": decision == "yes"}
 
 
+@observe(name="refine-research")
 async def refined_research(state: AgentState):
 
     response = await deep_llm.ainvoke(
@@ -173,7 +180,12 @@ graph.add_conditional_edges(
 )
 
 
-config = {"configurable": {"thread_id": "conversation_1"}}
+config = {
+    "configurable": {"thread_id": "conversation_1"},
+    "callbacks": [langfuse_handler]
+}
+
+# config = {"configurable": {"thread_id": "conversation_1"}}
 # workflow = graph.compile(
 #     checkpointer=memory
 # )

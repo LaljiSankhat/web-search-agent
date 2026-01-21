@@ -8,8 +8,12 @@ from services.prompts import deep_think_prompt
 from services.text_splitter import split_text_into_chunks
 from langchain_core.prompts import ChatPromptTemplate, SystemMessagePromptTemplate, HumanMessagePromptTemplate
 
-
 load_dotenv()
+from langfuse.langchain import CallbackHandler
+
+langfuse_handler = CallbackHandler()
+
+
 
 # llm = ChatGroq(
 #     api_key=os.getenv("GROQ_API_KEY"),
@@ -22,6 +26,7 @@ load_dotenv()
 map_llm = ChatGroq(
     api_key=os.getenv("GROQ_API_KEY"),
     model="llama-3.1-8b-instant",  # cheap & fast
+    callbacks=[langfuse_handler],
     temperature=0,
     max_tokens=512,
 )
@@ -29,6 +34,7 @@ map_llm = ChatGroq(
 deep_llm = ChatGroq(
     api_key=os.getenv("GROQ_API_KEY"),
     model="llama-3.3-70b-versatile",  #  deep reasoning
+    callbacks=[langfuse_handler],
     temperature=0.5,
     max_tokens=2048,
 )
@@ -36,6 +42,7 @@ deep_llm = ChatGroq(
 
 sentiment_llm = ChatGroq(
     model="llama-3.1-8b-instant",
+    callbacks=[langfuse_handler],
     temperature=0  # VERY important for classification
 )
 
@@ -51,13 +58,13 @@ Respond with ONLY one word: positive or negative.
 """)
 
 
-response = sentiment_llm.invoke(
-    sentiment_prompt.format_messages(
-        user_text="i am not interested to know about sub topic"
-    )
-)
+# response = sentiment_llm.invoke(
+#     sentiment_prompt.format_messages(
+#         user_text="i am not interested to know about sub topic"
+#     )
+# )
 
-print(response.content)
+# print(response.content)yes
 
 # result = " ".join(contents)
 
