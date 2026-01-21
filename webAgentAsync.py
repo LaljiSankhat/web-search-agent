@@ -6,7 +6,7 @@ from services.llms import map_llm, deep_llm
 from services.prompts import deep_think_prompt, user_interest_prompt, map_prompt
 from services.text_splitter import split_text_into_chunks
 from langgraph.types import interrupt, Command
-from services.tavily_search import tavily_client
+from services.async_tavily import async_tavily_client
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 import asyncio
 
@@ -32,11 +32,11 @@ class AgentState(TypedDict):
 
 
 
-def get_contents(state: AgentState):
+async def get_contents(state: AgentState):
     topic_user = state["userMessage"]
     state["topic"] = topic_user
 
-    response = tavily_client.search(
+    response = await async_tavily_client.search(
         query=topic_user,
         search_depth="advanced",      
         include_raw_content=False,    
