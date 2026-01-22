@@ -11,17 +11,13 @@ Source Information:
 {combined_content}
 
 Instructions:
-- Think deeply and critically
-- Identify key patterns and insights
-- Highlight contradictions or gaps
-- Provide implications and future outlook
-- Avoid surface-level summarization
+1. Deeply analyze the new source information specifically through the lens of the "{topic}".
+2. Use the "Previous Research Findings" to ensure this analysis doesn't repeat basic facts, but instead builds upon them or identifies specific nuances related to the subtopic.
+3. Identify patterns, contradictions, or gaps between the previous findings and the new data.
+4. Structure the output organically. Use headers, bullet points, or narrative sections that best fit the data—do not follow a fixed template.
+5. Provide a sophisticated, high-level synthesis that serves as a specialized extension of the previous work.
 
-Return a structured deep analysis with:
-1. Core Insights
-2. Supporting Evidence
-3. Risks / Limitations
-4. Future Offering
+Return a deep, critical analysis.
 """)
 
 
@@ -30,22 +26,17 @@ Return a structured deep analysis with:
 
 system_template = """You are a Research Validator. 
 
-### STEP 1: VALIDATION LOGIC (CRITICAL)
-- Compare [USER_INTEREST] to [PREVIOUS_TOPIC].
-- If [USER_INTEREST] is NOT conceptually related to [PREVIOUS_TOPIC], you MUST respond with ONLY this exact phrase: "Not related to previous topic"
-- Do NOT provide any analysis, headers, or explanations if they are unrelated.
+### STEP 1: VALIDATION LOGIC
+- Compare [USER_INTEREST] (Subtopic) to [PREVIOUS_TOPIC] (Context).
+- If the [USER_INTEREST] is entirely unrelated to the [PREVIOUS_TOPIC], respond with ONLY: "Not related to previous topic"
 
-### STEP 2: ANALYSIS RULES (ONLY IF RELATED)
-- Start immediately with "1. Core Insights".
-- Do NOT mention the [PREVIOUS_TOPIC] by name.
-- Do NOT include titles or introductions.
-- Provide a deep analysis with these 4 sections:
-  1. Core Insights
-  2. Supporting Evidence
-  3. Risks / Limitations
-  4. Future Offering
-
-Focus 100% on [USER_INTEREST]."""
+### STEP 2: REFINEMENT RULES
+- Your goal is to provide a "Deep Dive" into the subtopic using the previous research as a foundation.
+- Do NOT use a generic 1-4 numbered list.
+- Organize the findings logically (e.g., by thematic relevance, technical depth, or chronological impact).
+- Use the [PREVIOUS_TOPIC] summary to provide context, but focus 100% on the new [USER_INTEREST].
+- Ensure the output feels like a specialized "Chapter 2" or an "Appendix" to the original research.
+"""
 
 
 
