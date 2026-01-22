@@ -48,15 +48,10 @@ async def get_contents(state: AgentState):
         # max_results=5
     )
 
-    documents = []
+    combined_content = ""
 
-    for r in response["results"]:
-        if r.get("content"):
-            documents.append(
-                f"{r['content']}"
-            )
-
-    combined_content = "\n\n".join(documents)
+    for r in response['results']:
+        combined_content += r['content']
 
     state["contents"] = combined_content
     return state
